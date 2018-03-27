@@ -22,3 +22,4 @@ RUN mkdir build
 WORKDIR /opt/pcraster/build
 RUN cmake .. -DGDAL_LIBRARY=/usr/lib/libgdal.so.20 -DGDAL_INCLUDE_DIR=/usr/include/gdal -DCMAKE_CXX_FLAGS="-Wno-deprecated"
 RUN make
+RUN make install
