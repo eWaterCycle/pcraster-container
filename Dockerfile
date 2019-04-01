@@ -1,25 +1,20 @@
 # DockertFile for the Massive-PotreeConverter
-FROM ubuntu:16.04
+FROM ubuntu:18.04
 MAINTAINER Gijs van den Oord <g.vandenoord@esciencecenter.nl>
 RUN apt-get update -y
 
 # INSTALL compilers and build toold
-RUN apt-get install -y apt-utils software-properties-common git cmake build-essential gcc g++ python-numpy python-dev python-pip lsb
+RUN apt-get install -y cmake gcc g++ wget
 
 # INSTALL libraries
-RUN apt-get install -y libboost-all-dev libncurses5-dev libncursesw5-dev freeglut3-dev qtdeclarative5-dev libqwt-dev libqwt-headers xsdcxx
-RUN pip install --upgrade pip
-RUN pip install docopt
-RUN add-apt-repository -y ppa:ubuntugis/ppa
-RUN apt-get update
-RUN apt install -y libgdal-dev gdal-bin python-gdal libgdal20 
+RUN apt-get install -y qtbase5-dev libncurses5-dev libqwt-qt5-dev libxerces-c-dev libboost-all-dev libgdal-dev python3-numpy python3-docopt
+
 # Configure & build
 WORKDIR /opt
-RUN git clone https://github.com/pcraster/pcraster.git
-WORKDIR /opt/pcraster
-RUN git submodule update --init --recursive
+RUN wget http://pcraster.geo.uu.nl/pcraster/4.2.1/pcraster-4.2.1.tar.bz2
+RUN tar xf pcraster-4.2.1.tar.bz2 && cd pcraster-4.2.1
 RUN mkdir build
-WORKDIR /opt/pcraster/build
-RUN cmake .. -DGDAL_LIBRARY=/usr/lib/libgdal.so.20 -DGDAL_INCLUDE_DIR=/usr/include/gdal -DCMAKE_CXX_FLAGS="-Wno-deprecated"
+WORKDIR /opt/pcraster-4.2.1/build
+RUN  cmake -DFERN_BUILD_ALGORITHM:BOOL=TRUE -DCMAKE_INSTALL_PREFIX:PATH=$HOME/pcraster -DPYTHON_EXECUTABLE:FILEPATH=/usr/bin/python3 ..
 RUN make
 RUN make install
